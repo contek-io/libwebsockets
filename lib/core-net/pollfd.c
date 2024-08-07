@@ -152,9 +152,6 @@ _lws_change_pollfd(struct lws *wsi, int _and, int _or, struct lws_pollargs *pa)
 	pa->prev_events = pfd->events;
 	pa->events = pfd->events = (short)((pfd->events & ~_and) | _or);
 
-	if (wsi->mux_substream)
-		return 0;
-
 #if defined(LWS_WITH_EXTERNAL_POLL)
 
 	if (wsi->a.vhost &&
@@ -183,6 +180,9 @@ _lws_change_pollfd(struct lws *wsi, int _and, int _or, struct lws_pollargs *pa)
 			context->event_loop_ops->io(wsi,
 					LWS_EV_START | LWS_EV_WRITE);
 	}
+
+	if (wsi->mux_substream)
+		return 0;
 
 	/*
 	 * if we changed something in this pollfd...
